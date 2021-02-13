@@ -1,4 +1,4 @@
-config.env
+<<<<<<< HEAD
 *auth_token.txt
 *.pyc
 downloads/*
@@ -6,8 +6,29 @@ download/*
 data*
 .vscode
 .idea
-*.json
-*.pickle
 authorized_chats.txt
 log.txt
 accounts/*
+venv/*
+config.env
+credentials.json
+token.pickle
+config.env
+credentials.json
+token.pickle
+=======
+*auth_token.txt
+*.pyc
+downloads/*
+download/*
+data*
+.vscode
+.idea
+authorized_chats.txt
+log.txt
+accounts/*
+venv/*
+config.env
+credentials.json
+token.pickle
+>>>>>>> beta-v1.1

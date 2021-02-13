@@ -13,14 +13,17 @@ RUN apt-get -qq update && \
 
 COPY requirements.txt .
 COPY extract /usr/local/bin
-RUN pip3 uninstall appdirs
-RUN pip3 install appdirs
-RUN chmod +x /usr/local/bin/extract
+COPY pextract /usr/local/bin
+RUN chmod +x /usr/local/bin/extract && chmod +x /usr/local/bin/pextract
 RUN pip3 install --no-cache-dir -r requirements.txt
+RUN echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+# ENV LANG en_US.UTF-8
+# ENV LANGUAGE en_US:en
+# ENV LC_ALL en_US.UTF-8
+COPY credentials.json token.pickle config.env /usr/src/app/
 COPY . .
 COPY netrc /root/.netrc
 RUN chmod +x aria.sh

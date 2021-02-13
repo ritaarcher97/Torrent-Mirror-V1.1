@@ -7,7 +7,7 @@ from bot import AUTO_DELETE_MESSAGE_DURATION, LOGGER, bot, \
     status_reply_dict, status_reply_dict_lock, download_dict, download_dict_lock
 from bot.helper.ext_utils.bot_utils import get_readable_message, get_readable_file_size, MirrorStatus
 from telegram.error import TimedOut, BadRequest
- 
+
 def sendMessage(text: str, bot, update: Update):
     try:
         return bot.send_message(update.message.chat_id,
@@ -15,8 +15,8 @@ def sendMessage(text: str, bot, update: Update):
                             text=text, parse_mode='HTMl')
     except Exception as e:
         LOGGER.error(str(e))
- 
- 
+
+
 def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
     try:
         return bot.send_message(update.message.chat_id,
@@ -24,8 +24,8 @@ def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarku
                              text=text, reply_markup=reply_markup, parse_mode='HTMl')
     except Exception as e:
         LOGGER.error(str(e))
- 
- 
+
+
 def editMessage(text: str, message: Message, reply_markup=None):
     try:
         bot.edit_message_text(text=text, message_id=message.message_id,
@@ -33,23 +33,23 @@ def editMessage(text: str, message: Message, reply_markup=None):
                               parse_mode='HTMl')
     except Exception as e:
         LOGGER.error(str(e))
- 
- 
+
+
 def deleteMessage(bot, message: Message):
     try:
         bot.delete_message(chat_id=message.chat.id,
                            message_id=message.message_id)
     except Exception as e:
         LOGGER.error(str(e))
- 
- 
+
+
 def sendLogFile(bot, update: Update):
     with open('log.txt', 'rb') as f:
         bot.send_document(document=f, filename=f.name,
                           reply_to_message_id=update.message.message_id,
                           chat_id=update.message.chat_id)
- 
- 
+
+
 def auto_delete_message(bot, cmd_message: Message, bot_message: Message):
     if AUTO_DELETE_MESSAGE_DURATION != -1:
         time.sleep(AUTO_DELETE_MESSAGE_DURATION)
@@ -59,8 +59,8 @@ def auto_delete_message(bot, cmd_message: Message, bot_message: Message):
             deleteMessage(bot, bot_message)
         except AttributeError:
             pass
- 
- 
+
+
 def delete_all_messages():
     with status_reply_dict_lock:
         for message in list(status_reply_dict.values()):
@@ -69,13 +69,14 @@ def delete_all_messages():
                 del status_reply_dict[message.chat.id]
             except Exception as e:
                 LOGGER.error(str(e))
- 
- 
+
+
 def update_all_messages():
     msg = get_readable_message()
     msg += f"<b>CPU:</b> {psutil.cpu_percent()}%" \
            f" <b>DISK:</b> {psutil.disk_usage('/').percent}%" \
-           f" <b>RAM:</b> {psutil.virtual_memory().percent}%"
+           f" <b>RAM:</b> {psutil.virtual_memory().percent}%\n" \
+           f"✥═══════════════════✥"
     with download_dict_lock:
         dlspeed_bytes = 0
         uldl_bytes = 0
@@ -104,13 +105,14 @@ def update_all_messages():
                 except Exception as e:
                     LOGGER.error(str(e))
                 status_reply_dict[chat_id].text = msg
- 
- 
+
+
 def sendStatusMessage(msg, bot):
     progress = get_readable_message()
-    progress += f"<b>CPU:</b> {psutil.cpu_percent()}%" \
+    progress += f"\n<b>CPU:</b> {psutil.cpu_percent()}%" \
            f" <b>DISK:</b> {psutil.disk_usage('/').percent}%" \
-           f" <b>RAM:</b> {psutil.virtual_memory().percent}%"
+           f" <b>RAM:</b> {psutil.virtual_memory().percent}%\n" \
+           f"✥═══════════════════✥"
     with download_dict_lock:
         dlspeed_bytes = 0
         uldl_bytes = 0

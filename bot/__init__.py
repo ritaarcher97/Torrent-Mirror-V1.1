@@ -2,43 +2,43 @@ import logging
 import os
 import threading
 import time
- 
+
 import aria2p
 import telegram.ext as tg
 from dotenv import load_dotenv
 import socket
 import faulthandler
 faulthandler.enable()
- 
+
 socket.setdefaulttimeout(600)
- 
+
 botStartTime = time.time()
 if os.path.exists('log.txt'):
     with open('log.txt', 'r+') as f:
         f.truncate(0)
- 
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
                     level=logging.INFO)
- 
+
 load_dotenv('config.env')
- 
+
 Interval = []
- 
- 
+
+
 def getConfig(name: str):
     return os.environ[name]
- 
- 
+
+
 LOGGER = logging.getLogger(__name__)
- 
+
 try:
     if bool(getConfig('_____REMOVE_THIS_LINE_____')):
         logging.error('The README.md file there to be read! Exiting now!')
         exit()
 except KeyError:
     pass
- 
+
 aria2 = aria2p.API(
     aria2p.Client(
         host="http://localhost",
@@ -46,10 +46,10 @@ aria2 = aria2p.API(
         secret="",
     )
 )
- 
+
 DOWNLOAD_DIR = None
 BOT_TOKEN = None
- 
+
 download_dict_lock = threading.Lock()
 status_reply_dict_lock = threading.Lock()
 # Key: update.effective_chat.id
@@ -67,6 +67,14 @@ if os.path.exists('authorized_chats.txt'):
             #    LOGGER.info(line.split())
             AUTHORIZED_CHATS.add(int(line.split()[0]))
 try:
+    achats = getConfig('AUTHORIZED_CHATS')
+    achats = achats.split(" ")
+    for chats in achats:
+        AUTHORIZED_CHATS.add(int(chats))
+except:
+    pass
+
+try:
     BOT_TOKEN = getConfig('BOT_TOKEN')
     parent_id = getConfig('GDRIVE_FOLDER_ID')
     telegraph_token = getConfig('TELEGRAPH_TOKEN')
@@ -82,7 +90,7 @@ try:
 except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now")
     exit(1)
- 
+
 try:
     MEGA_API_KEY = getConfig('MEGA_API_KEY')
 except KeyError:
@@ -143,7 +151,7 @@ try:
         IS_TEAM_DRIVE = False
 except KeyError:
     IS_TEAM_DRIVE = False
- 
+
 try:
     USE_SERVICE_ACCOUNTS = getConfig('USE_SERVICE_ACCOUNTS')
     if USE_SERVICE_ACCOUNTS.lower() == 'true':
@@ -152,7 +160,7 @@ try:
         USE_SERVICE_ACCOUNTS = False
 except KeyError:
     USE_SERVICE_ACCOUNTS = False
- 
+
 try:
     BLOCK_MEGA_LINKS = getConfig('BLOCK_MEGA_LINKS')
     if BLOCK_MEGA_LINKS.lower() == 'true':
@@ -161,16 +169,25 @@ try:
         BLOCK_MEGA_LINKS = False
 except KeyError:
     BLOCK_MEGA_LINKS = False
- 
+
 try:
     SHORTENER = getConfig('SHORTENER')
     SHORTENER_API = getConfig('SHORTENER_API')
-    if len(SHORTENER) == 0 or len(SHORTENER_API) == 0:
+    SHORTURL_STRUCTURE = getConfig('SHORTURL_STRUCTURE')
+    if len(SHORTENER) == 0 or len(SHORTENER_API) == 0 or len(SHORTURL_STRUCTURE) == 0:
+        SHORTURL_STRUCTURE = 'https://{}/api?api={}&url={}&format=text'
         raise KeyError
 except KeyError:
     SHORTENER = None
     SHORTENER_API = None
- 
+    SHORTURL_STRUCTURE = None
+try:
+    SHORTENERLINK_API = getConfig('SHORTENERLINK_API')
+    if len(SHORTENERLINK_API) == 0:
+        raise KeyError
+except KeyError:
+    SHORTENERLINK_API = None
+
 updater = tg.Updater(token=BOT_TOKEN,use_context=True)
 bot = updater.bot
 dispatcher = updater.dispatcher
