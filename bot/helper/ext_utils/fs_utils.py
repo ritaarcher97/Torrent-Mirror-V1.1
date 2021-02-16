@@ -11,7 +11,10 @@ from .exceptions import NotSupportedExtractionArchive
 def clean_download(path: str):
     if os.path.exists(path):
         LOGGER.info(f"Cleaning download: {path}")
-        shutil.rmtree(path)
+    try:
+        shutil.rmtree(DOWNLOAD_DIR)
+    except FileNotFoundError:
+        pass
 
 
 def start_cleanup():
