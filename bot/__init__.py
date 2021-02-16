@@ -2,10 +2,14 @@ import logging
 import os
 import threading
 import time
+import random
+import string
 
 import aria2p
 import telegram.ext as tg
 from dotenv import load_dotenv
+from pyrogram import Client
+from telegraph import Telegraph
 import socket
 import faulthandler
 faulthandler.enable()
@@ -90,6 +94,18 @@ try:
 except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now")
     exit(1)
+
+LOGGER.info("Generating USER_SESSION_STRING")
+with Client(':memory:', api_id=int(TELEGRAM_API), api_hash=TELEGRAM_HASH, bot_token=BOT_TOKEN) as app:
+    USER_SESSION_STRING = app.export_session_string()
+
+#Generate Telegraph Token
+sname = ''.join(random.SystemRandom().choices(string.ascii_letters, k=8))
+LOGGER.info("Generating Telegraph Token using '" + sname + "' name")
+telegraph = Telegraph()
+telegraph.create_account(short_name=sname)
+telegraph_token = telegraph.get_access_token()
+LOGGER.info("Telegraph Token Generated: '" + telegraph_token + "'")
 
 try:
     MEGA_API_KEY = getConfig('MEGA_API_KEY')
