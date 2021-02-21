@@ -9,3 +9,6 @@ authorized_chats.txt
 log.txt
 accounts/*
 venv/*
+config.env
+credentials.json
+token.pickle
