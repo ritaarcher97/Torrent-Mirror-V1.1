@@ -61,7 +61,9 @@ class MegaAppListener(MegaListener):
     def onRequestFinish(self, api, request, error):
         LOGGER.info('Mega Request finished ({}); Result: {}'
                     .format(request, error))
-
+        if str(error).lower() != "no error":
+            self.error = error.copy()
+            return
         request_type = request.getType()
         if request_type == MegaRequest.TYPE_LOGIN:
             api.fetchNodes()
@@ -131,6 +133,7 @@ class AsyncExecutor:
         function(*args)
         self.continue_event.wait()
 
+listeners = []
 
 class MegaDownloadHelper:
     def __init__(self):
@@ -143,7 +146,9 @@ class MegaDownloadHelper:
             raise MegaDownloaderException('Mega API KEY not provided! Cannot mirror mega links')
         executor = AsyncExecutor()
         api = MegaApi(MEGA_API_KEY, None, None, 'telegram-mirror-bot')
+        global listeners
         mega_listener = MegaAppListener(executor.continue_event, listener)
+        listeners.append(mega_listener)
         with download_dict_lock:
             download_dict[listener.uid] = MegaDownloadStatus(mega_listener, listener)
         os.makedirs(path)
