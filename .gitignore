@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 *auth_token.txt
 *.pyc
 downloads/*
@@ -10,25 +9,3 @@ authorized_chats.txt
 log.txt
 accounts/*
 venv/*
-config.env
-credentials.json
-token.pickle
-config.env
-credentials.json
-token.pickle
-=======
-*auth_token.txt
-*.pyc
-downloads/*
-download/*
-data*
-.vscode
-.idea
-authorized_chats.txt
-log.txt
-accounts/*
-venv/*
-config.env
-credentials.json
-token.pickle
->>>>>>> beta-v1.1

@@ -51,13 +51,65 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 
 
 @run_async
-def restart(update, context):
-    restart_message = sendMessage("Restarting, Please wait!", context.bot, update)
+def update(update, context):
+    branches = ["stable"]
+    text = update.effective_message.text
+    msg = sendMessage("Fetching Updates....", context.bot, update)
+    repo_url = "https://github.com/junedkh/Torrent-Mirror-V1.1.git"
+    try:
+        repo = Repo()
+    except NoSuchPathError as error:
+        msg.edit_text(f'`directory {error} is not found`', parse_mode="Markdown")
+        return
+    except InvalidGitRepositoryError as error:
+        msg.edit_text(f'`directory {error} does not seems to be a git repository`', parse_mode="Markdown")
+        return
+    except GitCommandError as error:
+        msg.edit_text(f'`Early failure! {error}`', parse_mode="Markdown")
+        return
+    except:
+        msg.edit_text("Something's Wrong, Please manually pull.")
+    branch = repo.active_branch.name
+    if branch not in branches:
+        msg.edit_text("Seems like you are using a custom branch!")
+        return
+    try:
+        repo.create_remote('upstream', repo_url)
+    except:
+        pass
+    remote = repo.remote('upstream')
+    remote.fetch(branch)
+    clogs = gen_chlog(repo, f'HEAD..upstream/{branch}')
+
+    if not clogs:
+        msg.edit_text(f"Bot up-to-date with *{branch}*", parse_mode="Markdown")
+        return
+    if not "now" in text:
+        msg.edit_text(f"*New Update Available*\nCHANGELOG:\n\n{clogs}\n\n\nDo `/update now` to Update BOT.", parse_mode="Markdown")
+        return
+    try:
+        remote.pull(branch)
+        msg.edit_text(f"*Successfully Updated BOT, Attempting to restart!*", parse_mode="Markdown")
+        _restart(msg)
+
+    except GitCommandError:
+        remote.git.reset('--hard')
+        msg.edit_text(f"*Successfully Updated BOT, Attempting to restart!*", parse_mode="Markdown")
+        _restart(msg)
+
+
+def _restart(reply):
     # Save restart message object in order to reply to it after restarting
     fs_utils.clean_all()
     with open('restart.pickle', 'wb') as status:
-        pickle.dump(restart_message, status)
+        pickle.dump(reply, status)
     execl(executable, executable, "-m", "bot")
+
+
+@run_async
+def restart(update, context):
+    restart_message = sendMessage("Restarting, Please wait!", context.bot, update)
+    _restart(restart_message)
 
 
 @run_async
@@ -100,6 +152,8 @@ def bot_help(update, context):
 
 /{BotCommands.LogCommand}: Get a log file of the bot. Handy for getting crash reports
 
+/{BotCommands.UpdateCommand}: Update the BOT with git repository.
+
 '''
     sendMessage(help_string, context.bot, update)
 
@@ -124,8 +178,11 @@ def main():
     stats_handler = CommandHandler(BotCommands.StatsCommand,
                                    stats, filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
     log_handler = CommandHandler(BotCommands.LogCommand, log, filters=CustomFilters.owner_filter)
+    update_handler = CommandHandler(BotCommands.UpdateCommand, update,
+                                   filters=CustomFilters.authorized_chat | CustomFilters.owner_filter)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(ping_handler)
+    dispatcher.add_handler(update_handler)
     dispatcher.add_handler(restart_handler)
     dispatcher.add_handler(help_handler)
     dispatcher.add_handler(stats_handler)

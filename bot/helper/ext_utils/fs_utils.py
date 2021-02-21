@@ -28,7 +28,6 @@ def clean_all():
     except FileNotFoundError:
         pass
 
-
 def exit_clean_up(signal, frame):
     try:
         LOGGER.info("Please wait, while we clean up the downloads and stop running downloads")
