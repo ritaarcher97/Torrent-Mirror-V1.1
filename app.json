@@ -27,6 +27,7 @@
       },
       "DOWNLOAD_DIR": {
         "description": "The path to the local folder where the downloads should be downloaded to.",
+        "value" : "/home/username/mirror-bot/downloads",
         "required": true
       },
       "DOWNLOAD_STATUS_UPDATE_INTERVAL": {

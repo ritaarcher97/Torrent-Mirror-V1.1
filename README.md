@@ -29,11 +29,7 @@ This is a telegram bot writen in python for mirroring files on the internet to o
 - [ ] Facebook Videos
 - [ ] Instagram Videos
 
-🛑 **ABOUT MEGA.NZ LINK** 🛑:
-MEGA Link it's too much Buggy and unstable 🌝😑!
-I recommend better Remove Mega Link support!
-
-👩‍🚒 **𝗠𝗢𝗗𝗜𝗙𝗜𝗘𝗗 𝗕𝗬** :[Juned KH](https://t.me/kjuned007)
+👩‍🚒 **𝗠𝗢𝗗𝗜𝗙𝗜𝗘𝗗 𝗕𝗬** : [Juned KH](https://t.me/kjuned007)
 
 - [X] Cool and stylish Progress Bar
 - [X] Change Requirment text 
@@ -46,26 +42,78 @@ I recommend better Remove Mega Link support!
 ## Bot commands to be set in botfather
 
 ```
-mirror - start mirroring
-tarmirror - upload tar (zipped) file
-unzipmirror - extract files
-clone - copy folder to drive
+mirror - Start Mirroring
+tarmirror - Upload tar (zipped) file
+unzipmirror - Extract files
+clone - copy file/folder to drive
 watch - mirror YT-DL support link
 tarwatch - mirror youtube playlist link as tar
-cancel - cancel a task
-cancelall - cancel all tasks
-del - delete file from drive
+cancel - Cancel a task
+cancelall - Cancel all tasks
+del - Delete file from Drive
 list - [query] searches files in G-Drive
-status - get mirror status message
-stats - bot usage stats
-help - get detailed help
-ping - ping bot
-log - bot log [owner only]
+status - Get Mirror Status message
+stats - Bot Usage Stats
+help - Get Detailed Help
+speedtest - Check Speed of the host
+log - Bot Log [owner only]
 ```
 
 # 𝗛𝗢𝗪 𝗧𝗢 𝗗𝗘𝗣𝗟𝗢𝗬?🤔
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/junedkh/Torrent-Mirror-V1.1/tree/stable)
+
+## Deploying With Heroku Cli
+<details>
+<summary><b>Click here for more details</b></summary>
+    
+- Run the script to generate token file(token.pickle) for Google Drive:
+```
+python3 generate_drive_token.py
+```
+- Install [Heroku cli](https://devcenter.heroku.com/articles/heroku-cli)
+- Login into your heroku account with command:
+```
+heroku login
+```
+- Create a new heroku app:
+```
+heroku create appname	
+```
+- Select This App in your Heroku-cli: 
+```
+heroku git:remote -a appname
+```
+- Change Dyno Stack to a Docker Container:
+```
+heroku stack:set container
+```
+- Add Heroku Postgres (only if you are deploying it for the 1st time)
+```
+heroku addons:create heroku-postgresql
+```
+- Add Private Credentials and Config Stuff:
+```
+git add -f credentials.json token.pickle config.env heroku.yml
+```
+- Commit new changes:
+```
+git commit -m "Added Creds."
+```
+- Push Code to Heroku:
+```
+git push heroku master --force
+```
+- Restart Worker by these commands:
+```
+heroku ps:scale worker=0
+```
+```
+heroku ps:scale worker=1	 	
+```
+</details>
+<br>
+
 
 ## Setting up config file
 ```
@@ -101,7 +149,6 @@ Ex : http://api.{}/stxt/{}/{} How to use for own (1st {} for SHORTENER 2nd {} fo
 
 this is not necessary for gplinks.in , afly.in, gpmojo.com, earnload.com, za.gl, urlshortx.com
 ```
- 
 ## Getting Google OAuth API credential file
 
 - Visit the [Google Cloud Console](https://console.developers.google.com/apis/credentials)

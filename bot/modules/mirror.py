@@ -185,24 +185,31 @@ class MirrorListener(listeners.MirrorListeners):
             else:
                 uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>'
             if uname is not None:
-                msg += f'\n\n<b>👤 Uploader: </b>👉 {uname}\n\n▫️#Uploaded To Team Drive ✓ \n\n⛔ 𝘿𝙤 𝙣𝙤𝙩 𝙨𝙝𝙖𝙧𝙚 𝙄𝙣𝙙𝙚𝙭 𝙇𝙞𝙣𝙠🙂 \n\n🛡️𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆: <b>@kjuned007</b>'
+                if INDEX_URL is not None:
+                    msg += f'\n\n<b>👤 Uploader: </b>👉 {uname}\n\n▫️#Uploaded To Team Drive ✓ \n\n⛔ 𝘿𝙤 𝙣𝙤𝙩 𝙨𝙝𝙖𝙧𝙚 𝙄𝙣𝙙𝙚𝙭 𝙇𝙞𝙣𝙠🙂 \n\n🛡️𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆: <b>@kjuned007</b>'
+                if INDEX_URL is None:
+                    msg += f'\n\n<b>👤 Uploader: </b>👉 {uname}\n\n▫️#Uploaded To Team Drive ✓\n\n🛡️𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆: <b>@kjuned007</b>'
 
-            if SHORTENER is not None and SHORTENER_API is not None and INDEX_URL is not None:
-                LOGGER.info("SHORTENER and SHORTENER_API found!")
+            if SHORTENER_API is not None and INDEX_URL is not None:
+                LOGGER.info("SHORTENER_API found!")
                 msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{siurl}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
+            
+            if SHORTENER_API is not None and INDEX_URL is None:
+                LOGGER.info("SHORTENER_API found!, INDEX_URL Null")
+                msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
                 
-            if INDEX_URL is None and SHORTENERLINK_API is not None:
-                LOGGER.info("INDEX URL NULL")
+            if SHORTENERLINK_API is not None and INDEX_URL is None:
+                LOGGER.info("SHORTENERLINK_API found!, INDEX URL NULL")
                 msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
 
-            if INDEX_URL is not None and SHORTENERLINK_API is not None:
-                LOGGER.info("INDEX WITH BILY")
+            if SHORTENERLINK_API is not None and INDEX_URL is not None:
+                LOGGER.info("SHORTENERLINK_API found!")
                 msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{ishortlink}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
             
-            if SHORTENER is None and SHORTENER_API is None and SHORTENERLINK_API is None and INDEX_URL is not None:
+            if SHORTENER_API is None and SHORTENERLINK_API is None and INDEX_URL is not None:
                 msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
 
-            if SHORTENER is None and SHORTENER_API is None and INDEX_URL is None and SHORTENERLINK_API is None:
+            if SHORTENER_API is None and INDEX_URL is None and SHORTENERLINK_API is None:
                 msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())

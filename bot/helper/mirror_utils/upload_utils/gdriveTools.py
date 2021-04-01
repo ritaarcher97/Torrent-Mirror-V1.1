@@ -24,7 +24,7 @@ from bot.helper.telegram_helper import button_build
 from telegraph import Telegraph
 
 from bot import parent_id, DOWNLOAD_DIR, IS_TEAM_DRIVE, INDEX_URL, \
-    USE_SERVICE_ACCOUNTS, download_dict, telegraph_token, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, SHORTURL_STRUCTURE, SHORTENER, SHORTENER_API
+    USE_SERVICE_ACCOUNTS, download_dict, telegraph_token, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, SHORTURL_STRUCTURE, SHORTENER, SHORTENER_API, SHORTENERLINK_API
 from bot.helper.ext_utils.bot_utils import *
 from bot.helper.ext_utils.fs_utils import get_mime_type, get_path_size
 
@@ -330,20 +330,52 @@ class GoogleDriveHelper:
                     surl = requests.get(SHORTURL_STRUCTURE.format(SHORTENER, SHORTENER_API, SHORTENER, SHORTENER_API, durl),verify=False).text
                     buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", surl)
                 else:
-                    buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", durl)
+                    if SHORTENERLINK_API is not None:
+                        s = pyshorteners.Shortener(api_key = SHORTENERLINK_API)
+                        gshortlink = s.bitly.short(durl)
+                        buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", gshortlink)
+                    else:
+                        buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", durl)
                 if INDEX_URL is not None:
                     url = requests.utils.requote_uri(f'{INDEX_URL}/{meta.get("name")}/')
                     if SHORTENER is not None and SHORTENER_API is not None:
                         siurl = requests.get(SHORTURL_STRUCTURE.format(SHORTENER, SHORTENER_API, url),verify=False).text
                         buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", siurl)
                     else:
-                        buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", url)
+                        if SHORTENERLINK_API is not None:
+                            s = pyshorteners.Shortener(api_key = SHORTENERLINK_API)
+                            ishortlink = s.bitly.short(url)
+                            buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", ishortlink)
+                        else:
+                            buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", url)
                 if BUTTON_THREE_NAME is not None and BUTTON_THREE_URL is not None:
                     buttons.buildbutton(f"{BUTTON_THREE_NAME}", f"{BUTTON_THREE_URL}")
                 if BUTTON_FOUR_NAME is not None and BUTTON_FOUR_URL is not None:
                     buttons.buildbutton(f"{BUTTON_FOUR_NAME}", f"{BUTTON_FOUR_URL}")
                 if BUTTON_FIVE_NAME is not None and BUTTON_FIVE_URL is not None:
                     buttons.buildbutton(f"{BUTTON_FIVE_NAME}", f"{BUTTON_FIVE_URL}")
+                
+                if SHORTENER_API is not None and INDEX_URL is not None:
+                    LOGGER.info("SHORTENER_API found!")
+                    msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{siurl}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
+            
+                if SHORTENER_API is not None and INDEX_URL is None:
+                    LOGGER.info("SHORTENER_API found!, INDEX_URL Null")
+                    msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
+                    
+                if SHORTENERLINK_API is not None and INDEX_URL is not None:
+                    LOGGER.info("SHORTENERLINK_API found!")
+                    msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{ishortlink}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
+
+                if SHORTENERLINK_API is not None and INDEX_URL is None:
+                    LOGGER.info("SHORTENERLINK_API found!, INDEX URL NULL")
+                    msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
+                
+                if SHORTENER_API is None and SHORTENERLINK_API is None and INDEX_URL is not None:
+                    msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
+
+                if SHORTENER_API is None and INDEX_URL is None and SHORTENERLINK_API is None:
+                    msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
             else:
                 file = self.copyFile(meta.get('id'), parent_id)
                 msg += f'📁 𝗙𝗶𝗹𝗲𝗡𝗮𝗺𝗲 : <code>{file.get("name")}</code>'
@@ -353,9 +385,19 @@ class GoogleDriveHelper:
                     surl = requests.get(SHORTURL_STRUCTURE.format(SHORTENER, SHORTENER_API, durl),verify=False).text
                     buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", surl)
                 else:
-                    buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", durl)
+                    if SHORTENERLINK_API is not None:
+                        s = pyshorteners.Shortener(api_key = SHORTENERLINK_API)
+                        gshortlink = s.bitly.short(durl)
+                        buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", gshortlink)
+                    else:
+                        buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", durl)
                 try:
-                    msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🔴 𝘿𝙤 𝙣𝙤𝙩 𝙎𝙝𝙖𝙧𝙚 𝙄𝙣𝙙𝙚𝙭 𝙇𝙞𝙣𝙠 😃\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 : <b>@kjuned007</b>'
+                    if INDEX_URL is not None:
+                        msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🔴 𝘿𝙤 𝙣𝙤𝙩 𝙎𝙝𝙖𝙧𝙚 𝙄𝙣𝙙𝙚𝙭 𝙇𝙞𝙣𝙠 😃\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 : <b>@kjuned007</b>'
+
+                    if INDEX_URL is None:
+                        msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 : <b>@kjuned007</b>'
+
                 except TypeError:
                     pass
                 if INDEX_URL is not None:
@@ -364,13 +406,41 @@ class GoogleDriveHelper:
                         siurl = requests.get(SHORTURL_STRUCTURE.format(SHORTENER, SHORTENER_API, url),verify=False).text
                         buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", siurl)
                     else:
-                        buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", url)
+                        if SHORTENERLINK_API is not None:
+                            s = pyshorteners.Shortener(api_key = SHORTENERLINK_API)
+                            ishortlink = s.bitly.short(url)
+                            buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", ishortlink)
+                        else:
+                            buttons.buildbutton("💡 𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤", url)
                 if BUTTON_THREE_NAME is not None and BUTTON_THREE_URL is not None:
                     buttons.buildbutton(f"{BUTTON_THREE_NAME}", f"{BUTTON_THREE_URL}")
                 if BUTTON_FOUR_NAME is not None and BUTTON_FOUR_URL is not None:
                     buttons.buildbutton(f"{BUTTON_FOUR_NAME}", f"{BUTTON_FOUR_URL}")
                 if BUTTON_FIVE_NAME is not None and BUTTON_FIVE_URL is not None:
                     buttons.buildbutton(f"{BUTTON_FIVE_NAME}", f"{BUTTON_FIVE_URL}")
+                
+                if SHORTENER_API is not None and INDEX_URL is not None:
+                    LOGGER.info("SHORTENER_API found!")
+                    msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{siurl}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
+            
+                if SHORTENER_API is not None and INDEX_URL is None:
+                    LOGGER.info("SHORTENER_API found!, INDEX_URL Null")
+                    msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
+                    
+                if SHORTENERLINK_API is not None and INDEX_URL is not None:
+                    LOGGER.info("SHORTENERLINK_API found!")
+                    msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{ishortlink}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
+
+                if SHORTENERLINK_API is not None and INDEX_URL is None:
+                    LOGGER.info("SHORTENERLINK_API found!, INDEX URL NULL")
+                    msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
+                
+                if SHORTENER_API is None and SHORTENERLINK_API is None and INDEX_URL is not None:
+                    msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
+
+                if SHORTENER_API is None and INDEX_URL is None and SHORTENERLINK_API is None:
+                    msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
+
         except Exception as err:
             if isinstance(err, RetryError):
                 LOGGER.info(f"Total Attempts: {err.last_attempt.attempt_number}")
@@ -512,7 +582,8 @@ class GoogleDriveHelper:
 
         content_count = 0
         if response["files"]:
-            msg += f'<h4>Results : {fileName}</h4><br><br>'
+            # msg += f'<h4>Results : {fileName}</h4><br><br>'
+            msg += f'<h4>{len(response["files"])} Results : {fileName}</h4><br><br>'
  
             for file in response.get('files', []):
                 if file.get('mimeType') == "application/vnd.google-apps.folder":  # Detect Whether Current Entity is a Folder or File.
@@ -570,7 +641,7 @@ class GoogleDriveHelper:
             if self.num_of_path > 1:
                 self.edit_telegraph()
 
-            msg = f"<b>Search Results For {fileName} 👇</b>"
+            msg = f"<b>🔎 Search Results For <i>{fileName}</i></b> \n<b>📚 Found {len(response['files'])} results</b>"
             buttons = button_build.ButtonMaker()   
             buttons.buildbutton("HERE", f"https://telegra.ph/{self.path[0]}")
 
