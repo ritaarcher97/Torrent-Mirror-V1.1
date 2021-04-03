@@ -66,7 +66,7 @@ def gen_chlog(repo, diff):
 def repo(update, context):
     bot.send_message(update.message.chat_id,
     reply_to_message_id=update.message.message_id,
-    text="*Repo*: [Github🔗](https://github.com/junedkh/Torrent-Mirror-V1.1)", parse_mode="Markdown")
+    text="*Repo*: `https://github.com/junedkh/Torrent-Mirror-V1.1`", parse_mode="Markdown")
 
 @run_async
 def update(update, context):
