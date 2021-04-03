@@ -6,6 +6,9 @@ from os import execl, path, remove
 from sys import executable
 import time
 
+from git import Repo
+from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
+
 from telegram.ext import CommandHandler, run_async
 from bot import dispatcher, updater, botStartTime, SHORTENER, SHORTENER_API, SHORTENERLINK_API
 from bot.helper.ext_utils import fs_utils
@@ -49,6 +52,21 @@ Type /{BotCommands.HelpCommand} to get a list of available commands
 '''
     sendMessage(start_string, context.bot, update)
 
+def gen_chlog(repo, diff):
+    ch_log = ''
+    d_form = "%d/%m/%y"
+    for c in repo.iter_commits(diff):
+        ch_log += f'• [{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
+    return ch_log
+
+
+# --- Reference: https://github.com/jagrit007/tgUserBot/blob/master/userbot/modules/updater.py
+
+@run_async
+def repo(update, context):
+    bot.send_message(update.message.chat_id,
+    reply_to_message_id=update.message.message_id,
+    text="*Repo*: [Github🔗](https://github.com/junedkh/Torrent-Mirror-V1.1)", parse_mode="Markdown")
 
 @run_async
 def update(update, context):
@@ -156,6 +174,8 @@ def bot_help(update, context):
 
 /{BotCommands.SpeedCommand}: Check Internet Speed of the Host
 
+/{BotCommands.RepoCommand}: Get the bot repo.
+
 '''
     sendMessage(help_string, context.bot, update)
 
@@ -182,10 +202,13 @@ def main():
     log_handler = CommandHandler(BotCommands.LogCommand, log, filters=CustomFilters.owner_filter)
     update_handler = CommandHandler(BotCommands.UpdateCommand, update,
                                    filters=CustomFilters.authorized_chat | CustomFilters.owner_filter)
+    repo_handler = CommandHandler(BotCommands.RepoCommand, repo,
+                                   filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(ping_handler)
     dispatcher.add_handler(update_handler)
     dispatcher.add_handler(restart_handler)
+    dispatcher.add_handler(repo_handler)
     dispatcher.add_handler(help_handler)
     dispatcher.add_handler(stats_handler)
     dispatcher.add_handler(log_handler)
