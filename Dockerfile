@@ -5,7 +5,7 @@ RUN echo 'You Must upload\ncredentials.json\ntoken.pickle\nconfig.env\nin your f
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
 RUN rm -rf /usr/src/app/
-RUN git clone https://github.com/junedkh/Torrent-Mirror-V1.1.git .
+RUN git clone -b stable --single-branch https://github.com/junedkh/Torrent-Mirror-V1.1.git .
 COPY credentials.json token.pickle config.env /usr/src/app/
 
 RUN apt-get -qq update && \
