@@ -393,10 +393,10 @@ class GoogleDriveHelper:
                         buttons.buildbutton("🌎 𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤", durl)
                 try:
                     if INDEX_URL is not None:
-                        msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🔴 𝘿𝙤 𝙣𝙤𝙩 𝙎𝙝𝙖𝙧𝙚 𝙄𝙣𝙙𝙚𝙭 𝙇𝙞𝙣𝙠 😃\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 : <b>@kjuned007</b>'
+                        msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🔴 𝘿𝙤 𝙣𝙤𝙩 𝙎𝙝𝙖𝙧𝙚 𝙄𝙣𝙙𝙚𝙭 𝙇𝙞𝙣𝙠 😃\n\n🛡️ <a href="https://t.me/kjuned007"><b>Juned KH</b></a>'
 
                     if INDEX_URL is None:
-                        msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 : <b>@kjuned007</b>'
+                        msg += f'\n\n<b>📀 Total Size :</b> {get_readable_file_size(int(meta.get("size")))}\n\n▫️#Uploaded to Drive ✓\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 : <a href="https://t.me/kjuned007"><b>Juned KH</b></a>'
 
                 except TypeError:
                     pass
