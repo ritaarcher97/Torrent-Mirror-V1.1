@@ -56,13 +56,14 @@ class AriaDownloadHelper(DownloadHelper):
     def __onDownloadPause(self, api, gid):
         LOGGER.info(f"onDownloadPause: {gid}")
         dl = getDownloadByGid(gid)
-        dl.getListener().onDownloadError('Download stopped by user!🌜🌛')
+        dl.getListener().onDownloadError('Download stopped by user!')
 
     @new_thread
     def __onDownloadStopped(self, api, gid):
         LOGGER.info(f"onDownloadStop: {gid}")
         dl = getDownloadByGid(gid)
-        if dl: dl.getListener().onDownloadError('𝐘𝐨𝐮𝐫 𝐋𝐢𝐧𝐤 𝐢𝐬 𝐃𝐄𝐀𝐃 ❗ 😒 𝐃𝐨𝐧❜𝐭 𝐮𝐬𝐞 𝐋𝐨𝐰 𝐒𝐞𝐞𝐝𝐬 𝐓𝐨𝐫𝐫𝐞𝐧𝐭')
+        if dl: 
+            dl.getListener().onDownloadError('𝐘𝐨𝐮𝐫 𝐋𝐢𝐧𝐤 𝐢𝐬 𝐃𝐄𝐀𝐃 ❗ 😒 𝐃𝐨𝐧❜𝐭 𝐮𝐬𝐞 𝐋𝐨𝐰 𝐒𝐞𝐞𝐝𝐬 𝐓𝐨𝐫𝐫𝐞𝐧𝐭')
 
     @new_thread
     def __onDownloadError(self, api, gid):
@@ -89,9 +90,7 @@ class AriaDownloadHelper(DownloadHelper):
             download = aria2.add_uris([link], {'dir': path, 'out': filename})
         if download.error_message: #no need to proceed further at this point
             listener.onDownloadError(download.error_message)
-            return 
+            return
         with download_dict_lock:
-            download_dict[listener.uid] = AriaDownloadStatus(download.gid,listener)
+            download_dict[listener.uid] = AriaDownloadStatus(download.gid, listener)
             LOGGER.info(f"Started: {download.gid} DIR:{download.dir} ")
-
-

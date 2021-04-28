@@ -61,7 +61,7 @@ log - Bot Log [owner only]
 
 # 𝗛𝗢𝗪 𝗧𝗢 𝗗𝗘𝗣𝗟𝗢𝗬?🤔
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/junedkh/Torrent-Mirror-V1.1/tree/stable)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https://github.com/junedkh/Torrent-Mirror-V1.1/tree/beta)
 
 ## Deploying With Heroku Cli
 <details>
