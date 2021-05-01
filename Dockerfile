@@ -1,11 +1,6 @@
 FROM ubuntu:20.04
 
 WORKDIR /usr/src/app
-
-RUN echo 'You Must upload\ncredentials.json\ntoken.pickle\nconfig.env\nin your froked repository before Deploy!'
-
-COPY credentials.json token.pickle config.env /usr/src/app/
-
 RUN chmod 777 /usr/src/app
 RUN apt-get -qq update && \
     DEBIAN_FRONTEND="noninteractive" apt-get -qq install -y tzdata aria2 git python3 python3-pip \
