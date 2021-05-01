@@ -15,16 +15,10 @@ def sendMessage(text: str, bot, update: Update):
                             text=text, parse_mode='HTMl', disable_web_page_preview=True)
     except Exception as e:
         LOGGER.error(str(e))
-
-
 def sendMarkup(text: str, bot, update: Update, reply_markup: InlineKeyboardMarkup):
-    try:
-        return bot.send_message(update.message.chat_id,
-                             reply_to_message_id=update.message.message_id,
-                             text=text, reply_markup=reply_markup, parse_mode='HTMl', disable_web_page_preview=True)
-    except Exception as e:
-        LOGGER.error(str(e))
-
+    return bot.send_message(update.message.chat_id,
+                            reply_to_message_id=update.message.message_id,
+                            text=text, reply_markup=reply_markup, parse_mode='HTMl', disable_web_page_preview=True)
 
 def editMessage(text: str, message: Message, reply_markup=None):
     try:
@@ -72,11 +66,14 @@ def delete_all_messages():
 
 
 def update_all_messages():
+    total, used, free = shutil.disk_usage('.')
+    used = get_readable_file_size(used)
+    free = get_readable_file_size(free)
     msg = get_readable_message()
     msg += f"<b>🖥️CPU:</b> {psutil.cpu_percent()}%" \
            f" <b>📀DISK:</b> {psutil.disk_usage('/').percent}%" \
            f" <b>📝RAM:</b> {psutil.virtual_memory().percent}%\n" \
-           f"✥═══════════════════════════✥"
+            f"✥═══════════════════════════✥"
     with download_dict_lock:
         dlspeed_bytes = 0
         uldl_bytes = 0
@@ -94,7 +91,7 @@ def update_all_messages():
                     uldl_bytes += float(speedy.split('M')[0]) * 1048576
         dlspeed = get_readable_file_size(dlspeed_bytes)
         ulspeed = get_readable_file_size(uldl_bytes)
-        msg += f"\n<b>DL:</b>{dlspeed}ps 🔻| <b>UL:</b>{ulspeed}ps 🔺\n"
+        msg += f"\n<b>USED:</b> {used} | <b>FREE:</b> {free}\n<b>DL:</b> {dlspeed}ps 🔻 | <b>UL:</b> {ulspeed}ps 🔺\n"
     with status_reply_dict_lock:
         for chat_id in list(status_reply_dict.keys()):
             if status_reply_dict[chat_id] and msg != status_reply_dict[chat_id].text:
@@ -108,11 +105,14 @@ def update_all_messages():
 
 
 def sendStatusMessage(msg, bot):
+    total, used, free = shutil.disk_usage('.')
+    used = get_readable_file_size(used)
+    free = get_readable_file_size(free)
     progress = get_readable_message()
     progress += f"\n<b>🖥️CPU:</b> {psutil.cpu_percent()}%" \
            f" <b>📀DISK:</b> {psutil.disk_usage('/').percent}%" \
            f" <b>📝RAM:</b> {psutil.virtual_memory().percent}%\n" \
-           f"✥═══════════════════════════✥"
+            f"✥═══════════════════════════✥"
     with download_dict_lock:
         dlspeed_bytes = 0
         uldl_bytes = 0
@@ -130,7 +130,7 @@ def sendStatusMessage(msg, bot):
                     uldl_bytes += float(speedy.split('M')[0]) * 1048576
         dlspeed = get_readable_file_size(dlspeed_bytes)
         ulspeed = get_readable_file_size(uldl_bytes)
-        progress += f"\n<b>DL:</b>{dlspeed}ps 🔻| <b>UL:</b>{ulspeed}ps 🔺\n"
+        progress += f"\n<b>USED:</b> {used} | <b>FREE:</b> {free}\n<b>DL:</b> {dlspeed}ps 🔻 | <b>UL:</b> {ulspeed}ps 🔺\n"
     with status_reply_dict_lock:
         if msg.message.chat.id in list(status_reply_dict.keys()):
             try:
