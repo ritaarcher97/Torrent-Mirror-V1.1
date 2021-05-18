@@ -9,7 +9,7 @@ RUN apt-get -qq update && \
     p7zip-full p7zip-rar \
     libcrypto++-dev libssl-dev \
     libc-ares-dev libcurl4-openssl-dev \
-    libsqlite3-dev libsodium-dev && \
+    libsqlite3-dev libsodium-dev wget && \
     curl -L https://github.com/jaskaranSM/megasdkrest/releases/download/v0.1/megasdkrest -o /usr/local/bin/megasdkrest && \
     chmod +x /usr/local/bin/megasdkrest && \
     wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht.dat -o /usr/src/app/dht.dat && \
