@@ -15,7 +15,7 @@ requests
 telegraph
 tenacity
 TgCrypto
-youtube_dl
+yt-dlp
 megasdkrestclient>=0.1.1,<1.0.0
 pyshorteners
 speedtest-cli
