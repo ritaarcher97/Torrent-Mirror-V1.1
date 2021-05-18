@@ -12,8 +12,8 @@ RUN apt-get -qq update && \
     libsqlite3-dev libsodium-dev wget && \
     curl -L https://github.com/jaskaranSM/megasdkrest/releases/download/v0.1/megasdkrest -o /usr/local/bin/megasdkrest && \
     chmod +x /usr/local/bin/megasdkrest && \
-    wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht.dat -o /usr/src/app/dht.dat && \
-    wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht6.dat -o /usr/src/app/dht6.dat && \
+    wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht.dat -O /usr/src/app/dht.dat && \
+    wget -q https://github.com/P3TERX/aria2.conf/raw/master/dht6.dat -O /usr/src/app/dht6.dat && \
     mkdir -p /root/
 
 COPY requirements.txt .
