@@ -37,7 +37,7 @@ class YoutubeDLHelper(DownloadHelper):
     def __init__(self, listener):
         super().__init__()
         self.name = ""
-        self.start_time = time.time()
+        self.__start_time = time.time()
         self.__listener = listener
         self.__gid = ""
         self.opts = {
