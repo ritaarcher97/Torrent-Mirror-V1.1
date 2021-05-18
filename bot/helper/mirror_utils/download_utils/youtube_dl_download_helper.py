@@ -123,7 +123,7 @@ class YoutubeDLHelper(DownloadHelper):
         if 'entries' in result:
             video = result['entries'][0]
             for v in result['entries']:
-                if v.get('filesize'):
+                if v and v.get('filesize'):
                     self.size += float(v['filesize'])
             # For playlists, ydl.prepare-filename returns the following format: <Playlist Name>-<Id of playlist>.NA
             self.name = name.split(f"-{result['id']}")[0]
