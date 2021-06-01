@@ -3,6 +3,7 @@ import re
 import threading
 import time
 
+from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot import download_dict, download_dict_lock
 
 LOGGER = logging.getLogger(__name__)
@@ -13,11 +14,11 @@ URL_REGEX = r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+"
 
 
 class MirrorStatus:
-    STATUS_UPLOADING = "𝗨𝗽𝗹𝗼𝗮𝗱𝗶𝗻𝗚...📤"
-    STATUS_DOWNLOADING = "𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗶𝗻𝗚...📥"
-    STATUS_WAITING = "Queued...⏳"
-    STATUS_FAILED = "Failed 🚫. Cleaning download"
-    STATUS_CANCELLED = "Cancelled ❎"
+    STATUS_UPLOADING = "Uploading...📤"
+    STATUS_DOWNLOADING = "Downloading...📥"
+    STATUS_WAITING = "Queued...📝"
+    STATUS_FAILED = "Failed 🚫. Cleaning Download..."
+    STATUS_CANCELLED = "Cancelled ❌. Cleaning Download..."
     STATUS_ARCHIVING = "Archiving...🔐"
     STATUS_EXTRACTING = "Extracting...📂"
 
@@ -93,22 +94,22 @@ def get_readable_message():
         msg = "<b>✥═══════════════════════════✥</b>"
         for download in list(download_dict.values()):
             msg += f"\n📁 𝗙𝗶𝗹𝗲𝗡𝗮𝗺𝗲: <code>{download.name()}</code>"
-            msg += f"\n<b>Status :</b> <i>{download.status()}</i>"
+            msg += f"\n<b>Status:</b> <i>{download.status()}</i>"
             if download.status() != MirrorStatus.STATUS_ARCHIVING and download.status() != MirrorStatus.STATUS_EXTRACTING:
                 msg += f"\n<code>{get_progress_bar_string(download)} {download.progress()}</code>"
                 if download.status() == MirrorStatus.STATUS_DOWNLOADING:
-                    msg += f"\n<b>Downloaded :</b> {get_readable_file_size(download.processed_bytes())} of {download.size()}"
+                    msg += f"\n<b>Downloaded:</b> {get_readable_file_size(download.processed_bytes())} of {download.size()}"
                 else:
                     msg += f"\n<b>Uploaded :</b> {get_readable_file_size(download.processed_bytes())} of {download.size()}"
-                msg += f"\n<b>🚀 Speed :</b> {download.speed()}, \n<b>⏳ ETA :</b> {download.eta()}"
+                msg += f"\n<b>🚀 Speed:</b> {download.speed()}\n<b>⏳ ETA:</b> {download.eta()} "
                 # if hasattr(download, 'is_torrent'):
                 try:
-                    msg += f"\n<b>Info :- Seeders:</b> {download.aria_download().num_seeders}" \
-                        f" & <b>Peers :</b> {download.aria_download().connections}"
+                    msg += f"\n<b>Seeders:</b> {download.aria_download().num_seeders}" \
+                        f" | <b>Peers:</b> {download.aria_download().connections}"
                 except:
                     pass
             if download.status() == MirrorStatus.STATUS_DOWNLOADING:
-                msg += f"\n<b>To Stop 👉</b>: <code> /cancel {download.gid()}</code>"
+                msg += f"\n<b>To Stop:</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>"
             msg += "\n\n"
         return msg
 
@@ -132,15 +133,25 @@ def get_readable_time(seconds: int) -> str:
     return result
 
 
-def is_mega_link(url: str):
-    return "mega.nz" in url
-
-
 def is_url(url: str):
     url = re.findall(URL_REGEX, url)
     if url:
         return True
     return False
+
+
+def is_mega_link(url: str):
+    return "mega.nz" in url
+
+
+def get_mega_link_type(url: str):
+    if "folder" in url:
+        return "folder"
+    elif "file" in url:
+        return "file"
+    elif "/#F!" in url:
+        return "folder"
+    return "file"
 
 
 def is_magnet(url: str):

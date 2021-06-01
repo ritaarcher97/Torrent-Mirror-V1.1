@@ -8,18 +8,23 @@ class _BotCommands:
         self.CancelAllCommand = 'cancelall'
         self.ListCommand = 'list'
         self.StatusCommand = 'status'
+        self.AuthorizedUsersCommand = 'users'
         self.AuthorizeCommand = 'authorize'
         self.UnAuthorizeCommand = 'unauthorize'
+        self.AddSudoCommand = 'addsudo'
+        self.RmSudoCommand = 'rmsudo'
         self.PingCommand = 'ping'
         self.RestartCommand = 'restart'
         self.StatsCommand = 'stats'
         self.HelpCommand = 'help'
-        self.SpeedCommand = 'speedtest'
         self.LogCommand = 'log'
-        self.CloneCommand = "clone"
+        self.SpeedCommand = 'speedtest'
+        self.CloneCommand = 'clone'
+        self.CountCommand = 'count'
         self.WatchCommand = 'watch'
         self.TarWatchCommand = 'tarwatch'
-        self.deleteCommand = 'del'
-        self.RepoCommand = "repo"
+        self.DeleteCommand = 'del'
+        self.UsageCommand = 'usage'
+
 
 BotCommands = _BotCommands()
