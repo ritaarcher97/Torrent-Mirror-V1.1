@@ -64,7 +64,9 @@ while True:
         continue
     TELEGRAM_API = int(TELEGRAM_API)
     break
-
+if iamnnew is True:
+    print("#Leave this empty if You deploying on Heroku with PostgreSQL, for using another database with Heroku just make the name of the var (DATABASE_URL), for vps You must fill database url here")
+DATABASE_URL = input("Enter your Database Url :- ")
 if iamnnew is True:
     print("This is to authenticate to your telegram account for downloading Telegram files.\nYou can get this from https://my.telegram.org")
 while True:
@@ -78,7 +80,7 @@ if iamnnew is True:
     print("You Must Write DOWNLOAD_DIR maybe this give error in future")
 DOWNLOAD_DIR = input("Enter your Download Directory :- ")
 if DOWNLOAD_DIR == "":
-    DOWNLOAD_DIR = "/home/username/mirror-bot/downloads"
+    DOWNLOAD_DIR = "/home/junedkh/mirror-bot/downloads"
     print("You Must Write DOWNLOAD_DIR maybe this give error in future")
 
 # Optional config
@@ -99,7 +101,7 @@ except ValueError:
     AUTO_DELETE_MESSAGE_DURATION = 20
 if iamnnew is True:
     print("(Optional field) (Leave empty if unsure) if this field is set to True , bot will check file in drive, if it is present in drive, downloading will be stopped.")
-STOP_DUPLICATE_MIRROR = input("STOP_DUPLICATE_MIRROR (YES or NO) :- ")
+STOP_DUPLICATE_MIRROR = input("Do you want STOP_DUPLICATE_MIRROR (YES or NO) :- ")
 if STOP_DUPLICATE_MIRROR.lower() == "yes":
     STOP_DUPLICATE_MIRROR = "true"
 else:
@@ -115,7 +117,7 @@ else:
 
 if iamnnew is True:
     print("(Optional field) Set to (True) if GDRIVE_FOLDER_ID is from a Team Drive else False or Leave it empty.")
-IS_TEAM_DRIVE = input("IS_TEAM_DRIVE (YES or NO) :- ")
+IS_TEAM_DRIVE = input("Is_TEAM_DRIVE (YES or NO) :- ")
 if IS_TEAM_DRIVE.lower() == "yes":
     IS_TEAM_DRIVE = "true"
 else:
@@ -127,17 +129,32 @@ if iamnnew is True:
     print("(Optional field) Refer to https://github.com/maple3142/GDIndex/ The URL should not have any trailing '/'")
 INDEX_URL = input("INDEX_URL :- ")
 if iamnnew is True:
+    print("Uptobox premium token to mirror uptobox links. Get it from https://uptobox.com/my_account.")
+UPTOBOX_TOKEN = input("Enter your Uptobox premium token :- ")
+if iamnnew is True:
     print("Mega.nz api key to mirror mega.nz links.")
-MEGA_KEY = input("MEGA_KEY :- ")
+MEGA_API_KEY = input("MEGA_API_KEY :- ")
 if iamnnew is True:
     print("Your username you used to sign up on mega.nz for using premium accounts (Leave th)")
-MEGA_USERNAME = input("MEGA_USERNAME :- ")
+MEGA_EMAIL_ID = input("MEGA_EMAIL_ID :- ")
 if iamnnew is True:
     print("Your password for your mega.nz account")
 MEGA_PASSWORD = input("MEGA_PASSWORD :- ")
 if iamnnew is True:
     print("(Optional field) If you want to remove mega.nz mirror support (bcoz it's too much buggy and unstable), set it to True.")
-BLOCK_MEGA_LINKS = input("BLOCK_MEGA_LINKS :- ")
+
+BLOCK_MEGA_LINKS = input("Do you want BLOCK_MEGA_LINKS (YES or NO) :- ")
+if BLOCK_MEGA_LINKS.lower() == "yes":
+    BLOCK_MEGA_LINKS = "true"
+else:
+    BLOCK_MEGA_LINKS = "false"
+
+BLOCK_MEGA_FOLDER = input("Do you want BLOCK_MEGA_FOLDER (YES or NO) :- ")
+if BLOCK_MEGA_FOLDER.lower() == "yes":
+    BLOCK_MEGA_FOLDER = "true"
+else:
+    BLOCK_MEGA_FOLDER = "false"
+
 if iamnnew is True:
     print("(Optional field) (Leave empty if unsure) Some of common shortner like gplinks.in , afly.in, gpmojo.com, earnload.com, za.gl, urlshortx.com")
 SHORTENER = input("SHORTENER :- ")
@@ -151,7 +168,17 @@ if iamnnew is True:
     print("(Optional field) (Leave empty if unsure) Some of common shortner like bitly,tinyurl")
 SHORTENERLINK_API = input("SHORTENERLINK_API :- ")
 
+if iamnnew is True:
+    print("You have to enter direct link of image")
+IMAGE_URL = input("Enter your Image url : - ")
+if IMAGE_URL == "":
+    IMAGE_URL = "https://telegra.ph/file/89a98d9634d296e516961.jpg"
+if iamnnew is True:
+    print("Your Heroku API key, get it from https://dashboard.heroku.com/account.")
 
+
+HEROKU_API_KEY = input("Enter Your Heroku API key :- ")
+HEROKU_APP_NAME = input("Enter the Heroku app name :- ")
 BUTTON_THREE_NAME = input("BUTTON_THREE_NAME :- ")
 BUTTON_THREE_URL = input("BUTTON_THREE_URL :- ")
 BUTTON_FOUR_NAME = input("BUTTON_FOUR_NAME :- ")
@@ -173,16 +200,23 @@ real_config["AUTO_DELETE_MESSAGE_DURATION"] = AUTO_DELETE_MESSAGE_DURATION
 real_config["USE_SERVICE_ACCOUNTS"] = USE_SERVICE_ACCOUNTS
 real_config["IS_TEAM_DRIVE"] = IS_TEAM_DRIVE
 real_config["AUTHORIZED_CHATS"] = AUTHORIZED_CHATS
+real_config["DATABASE_URL"] = DATABASE_URL
 real_config["INDEX_URL"] = INDEX_URL
-real_config["MEGA_KEY"] = MEGA_KEY
-real_config["MEGA_USERNAME"] = MEGA_USERNAME
+real_config["UPTOBOX_TOKEN"] = UPTOBOX_TOKEN
+real_config["MEGA_API_KEY"] = MEGA_API_KEY
+real_config["MEGA_EMAIL_ID"] = MEGA_EMAIL_ID
 real_config["MEGA_PASSWORD"] = MEGA_PASSWORD
+real_config["BLOCK_MEGA_FOLDER"] = BLOCK_MEGA_FOLDER
+real_config["BLOCK_MEGA_LINKS"] = BLOCK_MEGA_LINKS
 real_config["STOP_DUPLICATE_MIRROR"] = STOP_DUPLICATE_MIRROR
 real_config["BLOCK_MEGA_LINKS"] = BLOCK_MEGA_LINKS
 real_config["SHORTENER"] = SHORTENER
 real_config["SHORTENER_API"] = SHORTENER_API
 real_config["SHORTURL_STRUCTURE"] = SHORTURL_STRUCTURE
 real_config["SHORTENERLINK_API"] = SHORTENERLINK_API
+real_config["IMAGE_URL"] = IMAGE_URL
+real_config["HEROKU_API_KEY"] = HEROKU_API_KEY
+real_config["HEROKU_APP_NAME"] = HEROKU_APP_NAME
 real_config["BUTTON_THREE_NAME"] = BUTTON_THREE_NAME
 real_config["BUTTON_THREE_URL"] = BUTTON_THREE_URL
 real_config["BUTTON_FOUR_NAME"] = BUTTON_FOUR_NAME
