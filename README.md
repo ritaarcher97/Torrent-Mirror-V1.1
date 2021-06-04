@@ -1,3 +1,6 @@
+<p align="center">
+<img src="https://visitor-badge.laobi.icu/badge?page_id=junedkh.Torrent-Mirror-V1.1" alt="visitors" />
+</p>
 # Important - Read these points first
 
 - Original repo is https://github.com/lzzy12/python-aria-mirror-bot
