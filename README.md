@@ -1,4 +1,10 @@
 <p align="center">
+<a href="https://github.com/junedkh/Torrent-Mirror-V1.1/stargazers">
+<img src="https://img.shields.io/github/stars/junedkh/Torrent-Mirror-V1.1" alt="Stars">
+</a>
+<a href="https://github.com/junedkh/Torrent-Mirror-V1.1/fork">
+<img src="https://img.shields.io/github/forks/junedkh/Torrent-Mirror-V1.1.svg" alt="Forks"/>
+</a>
 <img src="https://visitor-badge.laobi.icu/badge?page_id=junedkh.Torrent-Mirror-V1.1" alt="visitors" />
 </p>
 # Important - Read these points first
