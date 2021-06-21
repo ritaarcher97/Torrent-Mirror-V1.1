@@ -105,6 +105,8 @@ try:
         getConfig('AUTO_DELETE_MESSAGE_DURATION'))
     TELEGRAM_API = getConfig('TELEGRAM_API')
     TELEGRAM_HASH = getConfig('TELEGRAM_HASH')
+    UPSTREAM_REPO = getConfig('UPSTREAM_REPO')
+    UPSTREAM_BRANCH = getConfig('UPSTREAM_BRANCH')
 except KeyError as e:
     LOGGER.error("One or more env variables missing! Exiting now")
     exit(1)
@@ -156,6 +158,13 @@ except KeyError:
     MEGA_EMAIL_ID = None
     MEGA_PASSWORD = None
 try:
+    MEGA_LIMIT = getConfig('MEGA_LIMIT')
+    if len(MEGA_LIMIT) == 0:
+        MEGA_LIMIT = None
+except KeyError:
+    MEGA_LIMIT = None
+
+try:
     HEROKU_API_KEY = getConfig('HEROKU_API_KEY')
 except KeyError:
     logging.warning('HEROKU API KEY not provided!')
@@ -165,37 +174,27 @@ try:
 except KeyError:
     logging.warning('HEROKU APP NAME not provided!')
     HEROKU_APP_NAME = None
+
 try:
-    MAX_TORRENT_SIZE = int(getConfig("MAX_TORRENT_SIZE"))
+    TORRENT_DIRECT_LIMIT = getConfig('TORRENT_DIRECT_LIMIT')
+    if len(TORRENT_DIRECT_LIMIT) == 0:
+        TORRENT_DIRECT_LIMIT = None
 except KeyError:
-    MAX_TORRENT_SIZE = None
-try:
-    ENABLE_FILESIZE_LIMIT = getConfig('ENABLE_FILESIZE_LIMIT')
-    if ENABLE_FILESIZE_LIMIT.lower() == 'true':
-        ENABLE_FILESIZE_LIMIT = True
-    else:
-        ENABLE_FILESIZE_LIMIT = False
-except KeyError:
-    ENABLE_FILESIZE_LIMIT = False
+    TORRENT_DIRECT_LIMIT = None
+
 try:
     UPTOBOX_TOKEN = getConfig('UPTOBOX_TOKEN')
 except KeyError:
     logging.info('UPTOBOX_TOKEN not provided!')
     UPTOBOX_TOKEN = None
+
 try:
     INDEX_URL = getConfig('INDEX_URL')
     if len(INDEX_URL) == 0:
         INDEX_URL = None
 except KeyError:
     INDEX_URL = None
-try:
-    BUTTON_THREE_NAME = getConfig('BUTTON_THREE_NAME')
-    BUTTON_THREE_URL = getConfig('BUTTON_THREE_URL')
-    if len(BUTTON_THREE_NAME) == 0 or len(BUTTON_THREE_URL) == 0:
-        raise KeyError
-except KeyError:
-    BUTTON_THREE_NAME = None
-    BUTTON_THREE_URL = None
+
 try:
     BUTTON_FOUR_NAME = getConfig('BUTTON_FOUR_NAME')
     BUTTON_FOUR_URL = getConfig('BUTTON_FOUR_URL')
@@ -204,6 +203,7 @@ try:
 except KeyError:
     BUTTON_FOUR_NAME = None
     BUTTON_FOUR_URL = None
+
 try:
     BUTTON_FIVE_NAME = getConfig('BUTTON_FIVE_NAME')
     BUTTON_FIVE_URL = getConfig('BUTTON_FIVE_URL')
@@ -212,6 +212,23 @@ try:
 except KeyError:
     BUTTON_FIVE_NAME = None
     BUTTON_FIVE_URL = None
+
+try:
+    BUTTON_SIX_NAME = getConfig('BUTTON_SIX_NAME')
+    BUTTON_SIX_URL = getConfig('BUTTON_SIX_URL')
+    if len(BUTTON_SIX_NAME) == 0 or len(BUTTON_SIX_URL) == 0:
+        raise KeyError
+except KeyError:
+    BUTTON_SIX_NAME = None
+    BUTTON_SIX_URL = None
+
+try:
+    CLONE_LIMIT = getConfig('CLONE_LIMIT')
+    if len(CLONE_LIMIT) == 0:
+        CLONE_LIMIT = None
+except KeyError:
+    CLONE_LIMIT = None
+
 try:
     STOP_DUPLICATE_MIRROR = getConfig('STOP_DUPLICATE_MIRROR')
     if STOP_DUPLICATE_MIRROR.lower() == 'true':
@@ -220,6 +237,33 @@ try:
         STOP_DUPLICATE_MIRROR = False
 except KeyError:
     STOP_DUPLICATE_MIRROR = False
+
+try:
+    STOP_DUPLICATE_MEGA = getConfig('STOP_DUPLICATE_MEGA')
+    if STOP_DUPLICATE_MEGA.lower() == 'true':
+        STOP_DUPLICATE_MEGA = True
+    else:
+        STOP_DUPLICATE_MEGA = False
+except KeyError:
+    STOP_DUPLICATE_MEGA = False
+
+try:
+    VIEW_LINK = getConfig('VIEW_LINK')
+    if VIEW_LINK.lower() == 'true':
+        VIEW_LINK = True
+    else:
+        VIEW_LINK = False
+except KeyError:
+    VIEW_LINK = False
+try:
+    STOP_DUPLICATE_CLONE = getConfig('STOP_DUPLICATE_CLONE')
+    if STOP_DUPLICATE_CLONE.lower() == 'true':
+        STOP_DUPLICATE_CLONE = True
+    else:
+        STOP_DUPLICATE_CLONE = False
+except KeyError:
+    STOP_DUPLICATE_CLONE = False
+
 try:
     IS_TEAM_DRIVE = getConfig('IS_TEAM_DRIVE')
     if IS_TEAM_DRIVE.lower() == 'true':
@@ -255,20 +299,12 @@ except KeyError:
 try:
     SHORTENER = getConfig('SHORTENER')
     SHORTENER_API = getConfig('SHORTENER_API')
-    SHORTURL_STRUCTURE = getConfig('SHORTURL_STRUCTURE')
-    if len(SHORTENER) == 0 or len(SHORTENER_API) == 0 or len(SHORTURL_STRUCTURE) == 0:
-        SHORTURL_STRUCTURE = 'https://{}/api?api={}&url={}&format=text'
+    if len(SHORTENER) == 0 or len(SHORTENER_API) == 0:
         raise KeyError
 except KeyError:
     SHORTENER = None
     SHORTENER_API = None
-    SHORTURL_STRUCTURE = None
-try:
-    SHORTENERLINK_API = getConfig('SHORTENERLINK_API')
-    if len(SHORTENERLINK_API) == 0:
-        raise KeyError
-except KeyError:
-    SHORTENERLINK_API = None
+
 
 try:
     IMAGE_URL = getConfig('IMAGE_URL')
@@ -277,6 +313,20 @@ try:
 except KeyError:
     IMAGE_URL = 'https://telegra.ph/file/89a98d9634d296e516961.jpg'
 
-updater = tg.Updater(token=BOT_TOKEN, use_context=True)
+IGNORE_PENDING_REQUESTS = False
+try:
+    if getConfig("IGNORE_PENDING_REQUESTS").lower() == "true":
+        IGNORE_PENDING_REQUESTS = True
+except KeyError:
+    pass
+
+try:
+    TUTORIAL_LINK = getConfig('TUTORIAL_LINK')
+    if len(TUTORIAL_LINK) == 0:
+        raise KeyError
+except KeyError:
+    TUTORIAL_LINK = None
+
+updater = tg.Updater(token=BOT_TOKEN)
 bot = updater.bot
 dispatcher = updater.dispatcher

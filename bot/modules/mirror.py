@@ -1,8 +1,9 @@
+from bot.helper.ext_utils.shortners import urlshortnners
 import requests
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler
 from telegram import InlineKeyboardMarkup
 
-from bot import Interval, INDEX_URL, BUTTON_THREE_NAME, BUTTON_THREE_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BLOCK_MEGA_FOLDER, BLOCK_MEGA_LINKS, SHORTENERLINK_API, SHORTURL_STRUCTURE
+from bot import Interval, INDEX_URL, BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BUTTON_SIX_NAME, BUTTON_SIX_URL, BLOCK_MEGA_FOLDER, BLOCK_MEGA_LINKS, TUTORIAL_LINK, VIEW_LINK
 from bot import dispatcher, DOWNLOAD_DIR, DOWNLOAD_STATUS_UPDATE_INTERVAL, download_dict, download_dict_lock, SHORTENER, SHORTENER_API
 from bot.helper.ext_utils import fs_utils, bot_utils
 from bot.helper.ext_utils.bot_utils import setInterval, get_mega_link_type
@@ -15,6 +16,7 @@ from bot.helper.mirror_utils.status_utils import listeners
 from bot.helper.mirror_utils.status_utils.extract_status import ExtractStatus
 from bot.helper.mirror_utils.status_utils.tar_status import TarStatus
 from bot.helper.mirror_utils.status_utils.upload_status import UploadStatus
+from bot.helper.mirror_utils.status_utils.gdownload_status import DownloadStatus
 from bot.helper.mirror_utils.upload_utils import gdriveTools
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.filters import CustomFilters
@@ -26,7 +28,8 @@ import os
 import subprocess
 import threading
 import re
-import pyshorteners
+import random
+import string
 
 ariaDlManager = AriaDownloadHelper()
 ariaDlManager.start_listener()
@@ -150,20 +153,21 @@ class MirrorListener(listeners.MirrorListeners):
     def onUploadProgress(self):
         pass
 
-    def onUploadComplete(self, link: str, size):
+    def onUploadComplete(self, link: str, size, files, folders, typ):
         with download_dict_lock:
-            msg = f'<b>📁 Filename: </b><code>{download_dict[self.uid].name()}</code>\n<b>Size: </b><code>{size}</code>'
+            msg = f'<b>Filename: </b><code>{download_dict[self.uid].name()}</code>\n<b>Size: </b><code>{size}</code>'
+            if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
+                msg += '\n<b>Type: </b><code>Folder</code>'
+                msg += f'\n<b>SubFolders: </b><code>{folders}</code>'
+                msg += f'\n<b>Files: </b><code>{files}</code>'
+            else:
+                msg += f'\n<b>Type: </b><code>{typ}</code>'
             buttons = button_build.ButtonMaker()
             if SHORTENER is not None and SHORTENER_API is not None:
-                surl = requests.get(SHORTURL_STRUCTURE.format(SHORTENER, SHORTENER_API, link),verify=False).text
-                buttons.buildbutton("☁️Drive Link☁️", surl)
+                surl = urlshortnners(theurlis=link)
+                buttons.buildbutton("☁️ Drive Link", surl)
             else:
-                if SHORTENERLINK_API is not None:
-                    short = pyshorteners.Shortener(api_key = SHORTENERLINK_API)
-                    gshortlink = short.bitly.short(link)
-                    buttons.buildbutton("☁️Drive Link☁️", gshortlink)
-                else:
-                    buttons.buildbutton("☁️Drive Link☁️", link)
+                buttons.buildbutton("☁️ Drive Link", link)
             LOGGER.info(f'Done Uploading {download_dict[self.uid].name()}')
             if INDEX_URL is not None:
                 url_path = requests.utils.quote(
@@ -171,25 +175,32 @@ class MirrorListener(listeners.MirrorListeners):
                 share_url = f'{INDEX_URL}/{url_path}'
                 if os.path.isdir(f'{DOWNLOAD_DIR}/{self.uid}/{download_dict[self.uid].name()}'):
                     share_url += '/'
-                if SHORTENER is not None and SHORTENER_API is not None:
-                    siurl = requests.get(SHORTURL_STRUCTURE.format(SHORTENER, SHORTENER_API, share_url),verify=False).text
-                    buttons.buildbutton("⚡Index Link⚡", siurl)
-                else:
-                    if SHORTENERLINK_API is not None:
-                        short = pyshorteners.Shortener(api_key = SHORTENERLINK_API)
-                        ishortlink = short.bitly.short(share_url)
-                        buttons.buildbutton("⚡Index Link⚡", ishortlink)
+                    if SHORTENER is not None and SHORTENER_API is not None:
+                        siurl = urlshortnners(theurlis=share_url)
+                        buttons.buildbutton("⚡ Index Link", siurl)
                     else:
-                        buttons.buildbutton("⚡Index Link⚡", share_url)
-            if BUTTON_THREE_NAME is not None and BUTTON_THREE_URL is not None:
-                buttons.buildbutton(
-                    f"{BUTTON_THREE_NAME}", f"{BUTTON_THREE_URL}")
+                        buttons.buildbutton("⚡ Index Link", share_url)
+                else:
+                    share_urls = f'{INDEX_URL}/{url_path}?a=view'
+                    if SHORTENER is not None and SHORTENER_API is not None:
+                        siurl = urlshortnners(theurlis=share_url)
+                        siurls = urlshortnners(theurlis=share_urls)
+                        buttons.buildbutton("⚡ Index Link", siurl)
+                        if VIEW_LINK:
+                            buttons.buildbutton("🌐 View Link", siurls)
+                    else:
+                        buttons.buildbutton("⚡ Index Link", share_url)
+                        if VIEW_LINK:
+                            buttons.buildbutton("🌐 View Link", share_urls)
             if BUTTON_FOUR_NAME is not None and BUTTON_FOUR_URL is not None:
                 buttons.buildbutton(
                     f"{BUTTON_FOUR_NAME}", f"{BUTTON_FOUR_URL}")
             if BUTTON_FIVE_NAME is not None and BUTTON_FIVE_URL is not None:
                 buttons.buildbutton(
                     f"{BUTTON_FIVE_NAME}", f"{BUTTON_FIVE_URL}")
+            if BUTTON_SIX_NAME is not None and BUTTON_SIX_URL is not None:
+                buttons.buildbutton(
+                    f"{BUTTON_SIX_NAME}", f"{BUTTON_SIX_URL}")
             if self.message.from_user.username:
                 uname = f"@{self.message.from_user.username}"
             else:
@@ -200,28 +211,15 @@ class MirrorListener(listeners.MirrorListeners):
                 if INDEX_URL is None:
                     msg += f'\n\n<b>👤 Uploader: </b>👉 {uname}\n\n🛡️ 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗕𝘆: <a href="https://t.me/kjuned007"><b>Juned KH</b></a>'
 
-            if SHORTENER_API is not None and INDEX_URL is not None:
-                LOGGER.info("SHORTENER_API found!")
+            if SHORTENER is not None and INDEX_URL is not None:
                 msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{siurl}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
-            
-            if SHORTENER_API is not None and INDEX_URL is None:
-                LOGGER.info("SHORTENER_API found!, INDEX_URL Null")
+                if TUTORIAL_LINK is not None:
+                    msg += f'\n\n<a href="{TUTORIAL_LINK}">𝐇𝐨𝐰 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝</a>'
+
+            if SHORTENER is not None and INDEX_URL is None:
                 msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{surl}</code>'
-                
-            if SHORTENERLINK_API is not None and INDEX_URL is None:
-                LOGGER.info("SHORTENERLINK_API found!, INDEX URL NULL")
-                msg += f'\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
-
-            if SHORTENERLINK_API is not None and INDEX_URL is not None:
-                LOGGER.info("SHORTENERLINK_API found!")
-                msg += f'\n\n𝐈𝐧𝐝𝐞𝐱 𝐋𝐢𝐧𝐤: <code>{ishortlink}</code>\n\n𝐃𝐫𝐢𝐯𝐞 𝐋𝐢𝐧𝐤: <code>{gshortlink}</code>'
-            
-            if SHORTENER_API is None and SHORTENERLINK_API is None and INDEX_URL is not None:
-                msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
-
-            if SHORTENER_API is None and INDEX_URL is None and SHORTENERLINK_API is None:
-                msg += f'\n\n🙌𝙉𝙊 𝙎𝙃𝙊𝙍𝙏𝙀𝙉𝙀𝙍 🎉🎉'
-                    
+                if TUTORIAL_LINK is not None:
+                    msg += f'\n\n<a href="{TUTORIAL_LINK}">𝐇𝐨𝐰 𝐭𝐨 𝐝𝐨𝐰𝐧𝐥𝐨𝐚𝐝</a>'
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
             except FileNotFoundError:
@@ -319,8 +317,38 @@ def _mirror(bot, update, isTar=False, extract=False):
         link = direct_link_generator(link)
     except DirectDownloadLinkException as e:
         LOGGER.info(f'{link}: {e}')
+        if "ERROR:" in str(e):
+            sendMessage(f"{e}", bot, update)
+            return
+        if "Youtube" in str(e):
+            sendMessage(f"ERROR: {e}", bot, update)
+            return
+
     listener = MirrorListener(bot, update, pswd, isTar, tag, extract)
-    if bot_utils.is_mega_link(link):
+
+    if bot_utils.is_gdrive_link(link):
+        if not isTar and not extract:
+            sendMessage(
+                f"Use /{BotCommands.CloneCommand} To Copy Google Drive File/Folder", bot, update)
+            return
+        res, size, name = gdriveTools.GoogleDriveHelper().clonehelper(link)
+        if res != "":
+            sendMessage(res, bot, update)
+            return
+        LOGGER.info(f"Download Name : {name}")
+        drive = gdriveTools.GoogleDriveHelper(name, listener)
+        gid = ''.join(random.SystemRandom().choices(
+            string.ascii_letters + string.digits, k=12))
+        download_status = DownloadStatus(drive, size, listener, gid)
+        with download_dict_lock:
+            download_dict[listener.uid] = download_status
+        if len(Interval) == 0:
+            Interval.append(setInterval(
+                DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
+        sendStatusMessage(update, bot)
+        drive.download(link)
+
+    elif bot_utils.is_mega_link(link):
         link_type = get_mega_link_type(link)
         if link_type == "folder" and BLOCK_MEGA_FOLDER:
             sendMessage("Mega folder are blocked!", bot, update)
@@ -330,7 +358,6 @@ def _mirror(bot, update, isTar=False, extract=False):
             mega_dl = MegaDownloadHelper()
             mega_dl.add_download(
                 link, f'{DOWNLOAD_DIR}/{listener.uid}/', listener)
-            sendStatusMessage(update, bot)
     else:
         ariaDlManager.add_download(
             link, f'{DOWNLOAD_DIR}/{listener.uid}/', listener, name)
@@ -340,27 +367,24 @@ def _mirror(bot, update, isTar=False, extract=False):
             DOWNLOAD_STATUS_UPDATE_INTERVAL, update_all_messages))
 
 
-@run_async
 def mirror(update, context):
     _mirror(context.bot, update)
 
 
-@run_async
 def tar_mirror(update, context):
     _mirror(context.bot, update, True)
 
 
-@run_async
 def unzip_mirror(update, context):
     _mirror(context.bot, update, extract=True)
 
 
 mirror_handler = CommandHandler(BotCommands.MirrorCommand, mirror,
-                                filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+                                filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
 tar_mirror_handler = CommandHandler(BotCommands.TarMirrorCommand, tar_mirror,
-                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+                                    filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
 unzip_mirror_handler = CommandHandler(BotCommands.UnzipMirrorCommand, unzip_mirror,
-                                      filters=CustomFilters.authorized_chat | CustomFilters.authorized_user)
+                                      filters=CustomFilters.authorized_chat | CustomFilters.authorized_user, run_async=True)
 dispatcher.add_handler(mirror_handler)
 dispatcher.add_handler(tar_mirror_handler)
 dispatcher.add_handler(unzip_mirror_handler)

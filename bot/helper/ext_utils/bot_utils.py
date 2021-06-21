@@ -4,7 +4,7 @@ import threading
 import time
 
 from bot.helper.telegram_helper.bot_commands import BotCommands
-from bot import download_dict, download_dict_lock
+from bot import download_dict, download_dict_lock, botStartTime
 
 LOGGER = logging.getLogger(__name__)
 
@@ -91,9 +91,10 @@ def get_progress_bar_string(status):
 
 def get_readable_message():
     with download_dict_lock:
-        msg = "<b>✥═══════════════════════════✥</b>"
+        botUptime = get_readable_time(time.time() - botStartTime)
+        msg = f"✥════⏰Bot Uptime: <code>{botUptime}</code>═════✥"
         for download in list(download_dict.values()):
-            msg += f"\n📁 𝗙𝗶𝗹𝗲𝗡𝗮𝗺𝗲: <code>{download.name()}</code>"
+            msg += f"\n\n📁 𝗙𝗶𝗹𝗲𝗡𝗮𝗺𝗲: <code>{download.name()}</code>"
             msg += f"\n<b>Status:</b> <i>{download.status()}</i>"
             if download.status() != MirrorStatus.STATUS_ARCHIVING and download.status() != MirrorStatus.STATUS_EXTRACTING:
                 msg += f"\n<code>{get_progress_bar_string(download)} {download.progress()}</code>"
@@ -110,7 +111,7 @@ def get_readable_message():
                     pass
             if download.status() == MirrorStatus.STATUS_DOWNLOADING:
                 msg += f"\n<b>To Stop:</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>"
-            msg += "\n\n"
+            msg += "\n"
         return msg
 
 
@@ -138,6 +139,10 @@ def is_url(url: str):
     if url:
         return True
     return False
+
+
+def is_gdrive_link(url: str):
+    return "drive.google.com" in url
 
 
 def is_mega_link(url: str):
