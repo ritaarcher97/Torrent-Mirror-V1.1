@@ -93,7 +93,7 @@ except:
 
 try:
     BOT_TOKEN = getConfig('BOT_TOKEN')
-    DB_URI = os.environ.get("DATABASE_URL")
+    DB_URI = getConfig('DATABASE_URL')
     parent_id = getConfig('GDRIVE_FOLDER_ID')
     DOWNLOAD_DIR = getConfig('DOWNLOAD_DIR')
     if not DOWNLOAD_DIR.endswith("/"):
@@ -137,11 +137,10 @@ app = Client(':memory:', api_id=int(TELEGRAM_API),
 
 # Generate Telegraph Token
 sname = ''.join(random.SystemRandom().choices(string.ascii_letters, k=8))
-LOGGER.info("Generating Telegraph Token using '" + sname + "' name")
+LOGGER.info("Generating TELEGRAPH_TOKEN using '" + sname + "' name")
 telegraph = Telegraph()
 telegraph.create_account(short_name=sname)
 telegraph_token = telegraph.get_access_token()
-LOGGER.info("Telegraph Token Generated: '" + telegraph_token + "'")
 
 try:
     MEGA_API_KEY = getConfig('MEGA_API_KEY')
@@ -158,13 +157,6 @@ except KeyError:
     MEGA_EMAIL_ID = None
     MEGA_PASSWORD = None
 try:
-    MEGA_LIMIT = getConfig('MEGA_LIMIT')
-    if len(MEGA_LIMIT) == 0:
-        MEGA_LIMIT = None
-except KeyError:
-    MEGA_LIMIT = None
-
-try:
     HEROKU_API_KEY = getConfig('HEROKU_API_KEY')
 except KeyError:
     logging.warning('HEROKU API KEY not provided!')
@@ -174,27 +166,35 @@ try:
 except KeyError:
     logging.warning('HEROKU APP NAME not provided!')
     HEROKU_APP_NAME = None
-
-try:
-    TORRENT_DIRECT_LIMIT = getConfig('TORRENT_DIRECT_LIMIT')
-    if len(TORRENT_DIRECT_LIMIT) == 0:
-        TORRENT_DIRECT_LIMIT = None
-except KeyError:
-    TORRENT_DIRECT_LIMIT = None
-
 try:
     UPTOBOX_TOKEN = getConfig('UPTOBOX_TOKEN')
 except KeyError:
     logging.info('UPTOBOX_TOKEN not provided!')
     UPTOBOX_TOKEN = None
-
 try:
     INDEX_URL = getConfig('INDEX_URL')
     if len(INDEX_URL) == 0:
         INDEX_URL = None
 except KeyError:
     INDEX_URL = None
-
+try:
+    TORRENT_DIRECT_LIMIT = getConfig('TORRENT_DIRECT_LIMIT')
+    if len(TORRENT_DIRECT_LIMIT) == 0:
+        TORRENT_DIRECT_LIMIT = None
+except KeyError:
+    TORRENT_DIRECT_LIMIT = None
+try:
+    CLONE_LIMIT = getConfig('CLONE_LIMIT')
+    if len(CLONE_LIMIT) == 0:
+        CLONE_LIMIT = None
+except KeyError:
+    CLONE_LIMIT = None
+try:
+    MEGA_LIMIT = getConfig('MEGA_LIMIT')
+    if len(MEGA_LIMIT) == 0:
+        MEGA_LIMIT = None
+except KeyError:
+    MEGA_LIMIT = None
 try:
     BUTTON_FOUR_NAME = getConfig('BUTTON_FOUR_NAME')
     BUTTON_FOUR_URL = getConfig('BUTTON_FOUR_URL')
@@ -203,7 +203,6 @@ try:
 except KeyError:
     BUTTON_FOUR_NAME = None
     BUTTON_FOUR_URL = None
-
 try:
     BUTTON_FIVE_NAME = getConfig('BUTTON_FIVE_NAME')
     BUTTON_FIVE_URL = getConfig('BUTTON_FIVE_URL')
@@ -212,7 +211,6 @@ try:
 except KeyError:
     BUTTON_FIVE_NAME = None
     BUTTON_FIVE_URL = None
-
 try:
     BUTTON_SIX_NAME = getConfig('BUTTON_SIX_NAME')
     BUTTON_SIX_URL = getConfig('BUTTON_SIX_URL')
@@ -221,14 +219,6 @@ try:
 except KeyError:
     BUTTON_SIX_NAME = None
     BUTTON_SIX_URL = None
-
-try:
-    CLONE_LIMIT = getConfig('CLONE_LIMIT')
-    if len(CLONE_LIMIT) == 0:
-        CLONE_LIMIT = None
-except KeyError:
-    CLONE_LIMIT = None
-
 try:
     STOP_DUPLICATE_MIRROR = getConfig('STOP_DUPLICATE_MIRROR')
     if STOP_DUPLICATE_MIRROR.lower() == 'true':
@@ -237,7 +227,6 @@ try:
         STOP_DUPLICATE_MIRROR = False
 except KeyError:
     STOP_DUPLICATE_MIRROR = False
-
 try:
     STOP_DUPLICATE_MEGA = getConfig('STOP_DUPLICATE_MEGA')
     if STOP_DUPLICATE_MEGA.lower() == 'true':
@@ -246,7 +235,6 @@ try:
         STOP_DUPLICATE_MEGA = False
 except KeyError:
     STOP_DUPLICATE_MEGA = False
-
 try:
     VIEW_LINK = getConfig('VIEW_LINK')
     if VIEW_LINK.lower() == 'true':
@@ -263,7 +251,6 @@ try:
         STOP_DUPLICATE_CLONE = False
 except KeyError:
     STOP_DUPLICATE_CLONE = False
-
 try:
     IS_TEAM_DRIVE = getConfig('IS_TEAM_DRIVE')
     if IS_TEAM_DRIVE.lower() == 'true':
@@ -304,8 +291,6 @@ try:
 except KeyError:
     SHORTENER = None
     SHORTENER_API = None
-
-
 try:
     IMAGE_URL = getConfig('IMAGE_URL')
     if len(IMAGE_URL) == 0:
