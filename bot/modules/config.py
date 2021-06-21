@@ -70,7 +70,7 @@ async def config_button(_, query):
     if data == '1':
         return await query.message.edit(
             __header__.format(data)
-            + f"**[ Telegram Config ]**\n\n**Bot Token:** `{BOT_TOKEN}`\n\n**Telegram API:** `{TELEGRAM_API}`\n\n**Telegram HASH:** `{TELEGRAM_HASH}`\n\n**Telegraph Token:** `{telegraph_token}`",
+            + f"**[ Telegram Config ]**\n\n**Bot Token:** `{BOT_TOKEN}`\n\n**Telegram API:** `{TELEGRAM_API}`\n\n**Telegram HASH:** `{TELEGRAM_HASH}`\n\n**Telegraph Token:** `{telegraph_token}`\n\n**[ REPO Detail ]**\n\n**Upstream Repo** `{UPSTREAM_REPO}`\n\n**Upstream Branch:** `{UPSTREAM_BRANCH}`",
             reply_markup=types.InlineKeyboardMarkup(
                 [
                     [
@@ -215,6 +215,23 @@ async def config_button(_, query):
                     [
                         types.InlineKeyboardButton(
                             f"{emoji.LEFT_ARROW}", callback_data='docs_8'),
+                        types.InlineKeyboardButton(
+                            f"{emoji.CROSS_MARK}", callback_data='docs_end'),
+                        types.InlineKeyboardButton(
+                            f"{emoji.RIGHT_ARROW}", callback_data='docs_1')
+                    ]
+                ]
+            )
+        )
+    elif data == '10':
+        return await query.message.edit(
+            __header__.format(data)
+            + f" **[ AVAULAIBLE usefull Configs ]**\n\n'UPTOBOX_TOKEN':\n\n'SHORTENER':\n\n'SHORTENER_API':\n\n'TUTORIAL_LINK':\n\n'IMAGE_URL':",
+            reply_markup=types.InlineKeyboardMarkup(
+                [
+                    [
+                        types.InlineKeyboardButton(
+                            f"{emoji.LEFT_ARROW}", callback_data='docs_9'),
                         types.InlineKeyboardButton(
                             f"{emoji.CROSS_MARK}", callback_data='docs_end'),
                         types.InlineKeyboardButton(
